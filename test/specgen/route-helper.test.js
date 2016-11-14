@@ -316,6 +316,27 @@ describe('route-helper', function() {
     });
   });
 
+  it('allows setting null for `responseModel`', function() {
+    var doc = createAPIDoc({
+      errors: [{
+        code: 422,
+        message: 'Validation',
+        responseModel: null,
+      }],
+    });
+    expect(doc.schema).to.be.undefined;
+  });
+
+  it('allows omitting the `responseModel`', function() {
+    var doc = createAPIDoc({
+      errors: [{
+        code: 422,
+        message: 'Validation',
+      }],
+    });
+    expect(doc.schema).to.be.undefined;
+  });
+
   it('includes custom http status code and override default ' +
     'success code in `responseMessages`', function() {
     var doc = createAPIDoc({
@@ -367,6 +388,23 @@ describe('route-helper', function() {
     var doc = createAPIDoc(
       {
         accepts: [{ arg: 'data', type: 'object', http: { source: 'body' }}],
+      },
+      { name: 'User' });
+    var param = doc.operation.parameters[0];
+    expect(param)
+      .to.have.property('schema')
+      .eql({ $ref: '#/definitions/User' });
+  });
+
+  it('supports `model` property', function() {
+    var doc = createAPIDoc(
+      {
+        accepts: [{
+          arg: 'result',
+          type: 'object',
+          model: 'User',
+          http: { source: 'body' },
+        }],
       },
       { name: 'User' });
     var param = doc.operation.parameters[0];
